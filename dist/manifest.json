@@ -1,0 +1,41 @@
+{
+  "name": "Image Download",
+  "description": "Download all images from website",
+  "version": "1.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "downloads"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "hook.js",
+        "request-hook.js"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "*.*" ],
+      "matches": [ "*://*/*" ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' https://unpkg.com;"
+  }
+}
