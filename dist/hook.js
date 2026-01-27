@@ -75,6 +75,13 @@
 
     function onMessage(message, sender, sendResponse) {
         console.log('onMessage', message);
+        
+        // 处理 ping 消息，用于检查 content script 是否已注入
+        if (message.type === 'ping') {
+            sendResponse({ type: 'pong', ready: true });
+            return true; // 保持消息通道开放
+        }
+        
         if (message.type === 'getAllImages') {
             const imageList = extractImagesFromSelector('img, image, a, [class], [style]');
             sendResponse({
@@ -82,7 +89,9 @@
                 imageList,
                 title: document.title,
             });
+            return true; // 保持消息通道开放
         }
+        
         if (message.type === 'getFetchImageList') {
             const imageContainer = document.getElementById('__IMAGE_DOWNLOAD_SCRIPT_HOOK__')
             if (imageContainer && imageContainer.value) {
@@ -92,8 +101,16 @@
                     imageList,
                 });
                 imageContainer.value = JSON.stringify([]);
+            } else {
+                sendResponse({
+                    type: 'fetchImageList',
+                    imageList: [],
+                });
             }
+            return true; // 保持消息通道开放
         }
+        
+        return true; // 保持消息通道开放，用于异步响应
     }
 
     chrome.runtime.onMessage.addListener(onMessage)
