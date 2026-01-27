@@ -13,7 +13,9 @@
     "default_popup": "index.html"
   },
   "permissions": [
-    "downloads"
+    "downloads",
+    "tabs",
+    "scripting"
   ],
   "host_permissions": [
     "*://*/*"
@@ -26,7 +28,9 @@
       ],
       "matches": [
         "*://*/*"
-      ]
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
     }
   ],
   "web_accessible_resources": [

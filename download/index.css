@@ -1,16 +1,31 @@
+/* 使用系统默认字体 */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  /*background-color: #242424;*/
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.92);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Custom CSS Variables for Editorial Design */
+  --bg-primary: #102a43;
+  --bg-secondary: #243b53;
+  --bg-elevated: #334e68;
+  --accent-primary: #f59e0b;
+  --accent-secondary: #fbbf24;
+  --text-primary: #f0f4f8;
+  --text-secondary: #bcccdc;
+  --border-color: rgba(188, 204, 220, 0.2);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --gradient-primary: linear-gradient(135deg, #102a43 0%, #243b53 50%, #334e68 100%);
+  --gradient-accent: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
 }
 
 a {
@@ -28,6 +43,31 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(188, 204, 220, 0.01) 2px,
+      rgba(188, 204, 220, 0.01) 4px
+    );
+  pointer-events: none;
+  z-index: 0;
 }
 
 h1 {

@@ -4,6 +4,7 @@ const LOG_SUFFIX = {
   INFO: '#26D907',
   WARNING: '#E4D00A',
   ERROR: '#D1191C',
+  DEBUG: '#9CA3AF', // 灰色用于调试信息
 };
 
 function log(suffix: keyof typeof LOG_SUFFIX, ...data: any[]) {
@@ -30,11 +31,16 @@ function warn (...data: any[]) {
 function error (...data: any[]) {
   log('ERROR', ...data);
 }
+function debug (...data: any[]) {
+  // Debug 信息使用 DEBUG 级别（灰色显示）
+  log('DEBUG', ...data);
+}
 
 const Log = {
   info,
   warn,
   error,
+  debug,
 };
 
 export default Log;
