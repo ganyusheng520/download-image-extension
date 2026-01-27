@@ -1,0 +1,52 @@
+---
+description: TypeScript 编码标准和最佳实践
+alwaysApply: true
+---
+
+# TypeScript 编码标准
+
+## 类型安全
+
+- 始终使用明确的类型，避免使用 `any`
+- 使用 `unknown` 替代 `any` 当类型不确定时
+- 为函数参数和返回值提供类型注解
+
+```typescript
+// ❌ BAD
+function processData(data: any) {
+  return data.value;
+}
+
+// ✅ GOOD
+function processData(data: { value: string }): string {
+  return data.value;
+}
+```
+
+## 错误处理
+
+- 使用 try-catch 处理异步操作
+- 提供有意义的错误信息
+- 使用类型安全的错误处理
+
+```typescript
+// ❌ BAD
+try {
+  await fetchData();
+} catch (e) {}
+
+// ✅ GOOD
+try {
+  await fetchData();
+} catch (e) {
+  Log.error('Failed to fetch data', { error: e });
+  throw new Error('Unable to retrieve data', { cause: e });
+}
+```
+
+## 代码组织
+
+- 使用命名导出而非默认导出（除非是 React 组件）
+- 将工具函数放在 `util/` 目录
+- 将配置放在 `config/` 目录
+- 保持文件职责单一

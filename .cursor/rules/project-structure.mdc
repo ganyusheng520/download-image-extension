@@ -1,0 +1,53 @@
+---
+description: 项目结构和文件组织规范
+alwaysApply: true
+---
+
+# 项目结构规范
+
+## 目录结构
+
+```
+download-image-extension/
+├── download/          # 下载页面的 React 应用
+│   ├── components/    # React 组件
+│   ├── config/        # 配置文件
+│   ├── util/          # 工具函数
+│   └── ...
+├── src/               # Popup 页面的 React 应用
+├── public/            # 扩展静态资源和清单文件
+└── dist/              # 构建输出（已忽略）
+```
+
+## 文件命名
+
+- 组件文件使用 PascalCase：`ImageWrapper.tsx`
+- 工具文件使用 camelCase：`download.ts`, `log.ts`
+- 配置文件使用 camelCase：`env.ts`, `theme.ts`
+- 目录使用 kebab-case 或 camelCase
+
+## 导入顺序
+
+1. React 相关导入
+2. 第三方库导入
+3. Chakra UI 导入
+4. 本地工具函数导入
+5. 组件导入
+6. 样式导入
+
+```typescript
+// ✅ GOOD
+import { useEffect, useRef, useState } from 'react';
+import { Button, Stack, Box } from '@chakra-ui/react';
+import { DownloadIcon } from '@chakra-ui/icons';
+import filenamify from 'filenamify';
+import { downloadImages } from './util/download';
+import { ImageWrapper } from './components/image-wrapper';
+import './App.css';
+```
+
+## 代码组织
+
+- 每个组件应该有对应的样式文件（如果使用 CSS）
+- 工具函数按功能分类放在 `util/` 目录
+- 类型定义可以放在组件文件内或单独的 `types.ts` 文件

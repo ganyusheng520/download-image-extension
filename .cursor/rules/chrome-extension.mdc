@@ -1,0 +1,53 @@
+---
+description: Chrome 扩展开发规范和模式
+globs: **/*.{ts,tsx,js}
+alwaysApply: false
+---
+
+# Chrome 扩展开发规范
+
+## Chrome API 使用
+
+- 使用 `chrome.tabs.sendMessage` 进行内容脚本通信
+- 使用 `chrome.downloads` API 处理下载
+- 使用类型定义 `@types/chrome` 确保类型安全
+
+```typescript
+// ✅ GOOD
+const tabId = getParamFromUrl('tabId');
+const response = await chrome.tabs.sendMessage(+tabId, {
+  type: 'getAllImages',
+});
+
+chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
+  suggest({
+    filename: `${folderName}/${downloadItem.filename}`,
+  });
+});
+```
+
+## 消息传递
+
+- 使用类型化的消息格式
+- 在 content script 和 popup/background 之间建立清晰的通信协议
+- 处理消息传递的错误情况
+
+## 文件下载
+
+- 使用 `filenamify` 处理文件名，避免非法字符
+- 为下载文件提供有意义的文件夹结构
+- 处理下载失败的情况
+
+```typescript
+// ✅ GOOD
+import filenamify from 'filenamify';
+
+const folderName = filenamify(title) || 'images';
+```
+
+## 扩展结构
+
+- `public/` 目录存放扩展清单和静态资源
+- `download/` 目录存放下载页面的 React 应用
+- `src/` 目录存放 popup 页面的 React 应用
+- 使用 Vite 的 MPA 模式支持多入口点
