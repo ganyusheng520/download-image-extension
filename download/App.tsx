@@ -14,6 +14,7 @@ import {isDev} from './config/env';
 import Log from './util/log';
 import filenamify from 'filenamify';
 import {downloadImages} from './util/download';
+import Preview from './components/preview';
 
 
 const imageMap = new Map<string, ImageType>();
@@ -27,6 +28,8 @@ function App() {
     const [limitSize, setLimitSize] = useState<number>(0);
     // const [folder, setFolder] = useState<string>('images');
     const [typeFilter, setTypeFilter] = useState<ImageFileType[]>(['png', 'jpg', 'jpeg', 'gif', 'webp']);
+    const [previewIndex, setPreviewIndex] = useState<number>(-1);
+    const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
     // 检查页面是否支持 content script 注入
     async function isPageInjectable(tabId: number): Promise<boolean> {
         try {
@@ -464,7 +467,7 @@ function App() {
             })
             .filter((url) => {
             const image = imageMap.get(url);
-            if (image?.width && (image.width < limitSize || image.height < limitSize )) {
+            if (image?.width && (image.width < limitSize || (image.height && image.height < limitSize))) {
                 return false;
             }
             return true;
@@ -475,8 +478,11 @@ function App() {
             }
             return true;
         }).map((url) => {
+            const image = imageMap.get(url);
             return {
                 url,
+                width: image?.width,
+                height: image?.height,
             };
         });
     }
@@ -484,6 +490,20 @@ function App() {
     function getSelectList() {
         const visibleImageList = getImageListFromView().map(item => item.url);
         return visibleImageList.filter(url => selectedImageList.includes(url));
+    }
+
+    function handlePreview(index: number) {
+        setPreviewIndex(index);
+        setIsPreviewOpen(true);
+    }
+
+    function handlePreviewClose() {
+        setIsPreviewOpen(false);
+        setPreviewIndex(-1);
+    }
+
+    function handlePreviewIndexChange(newIndex: number) {
+        setPreviewIndex(newIndex);
     }
 
     useEffect(() => {
@@ -596,37 +616,52 @@ function App() {
                                    selected={selectedImageList.includes(imageData.url)}
                                    onImageLoad={onImageLoad}
                                    onSelectionChange={onSelectionChange}
+                                   onPreview={handlePreview}
+                                   index={index}
                                    key={imageData.url + index}/>
                         );
                     })
                 }
             </ul>
 
-            {/* Download Button - Fixed */}
-            <Box className="download-button-container">
-                <Button rightIcon={<DownloadIcon />}
-                        bg="brand.800"
-                        color="brand.50"
-                        size="lg"
-                        onClick={downloadImage}
-                        borderRadius="12px"
-                        fontWeight="700"
-                        fontSize="16px"
-                        px="24px"
-                        py="24px"
-                        boxShadow="0 4px 16px rgba(0, 0, 0, 0.3)"
-                        border="1px solid"
-                        borderColor="accent.400"
-                        _hover={{
-                            bg: "brand.700",
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
-                        }}
-                        _active={{
-                            bg: "brand.900",
-                            transform: 'translateY(0)',
-                        }}>下载</Button>
-            </Box>
+            {/* Preview Modal */}
+            {isPreviewOpen && previewIndex >= 0 && (
+                <Preview
+                    imageList={imageDataList}
+                    currentIndex={previewIndex}
+                    isOpen={isPreviewOpen}
+                    onClose={handlePreviewClose}
+                    onIndexChange={handlePreviewIndexChange}
+                />
+            )}
+
+            {/* Download Button - Fixed, only show when images are selected */}
+            {getSelectList().length > 0 && (
+                <Box className="download-button-container">
+                    <Button rightIcon={<DownloadIcon />}
+                            bg="brand.800"
+                            color="brand.50"
+                            size="lg"
+                            onClick={downloadImage}
+                            borderRadius="12px"
+                            fontWeight="700"
+                            fontSize="16px"
+                            px="24px"
+                            py="24px"
+                            boxShadow="0 4px 16px rgba(0, 0, 0, 0.3)"
+                            border="1px solid"
+                            borderColor="accent.400"
+                            _hover={{
+                                bg: "brand.700",
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
+                            }}
+                            _active={{
+                                bg: "brand.900",
+                                transform: 'translateY(0)',
+                            }}>下载</Button>
+                </Box>
+            )}
         </Box>
     );
 }

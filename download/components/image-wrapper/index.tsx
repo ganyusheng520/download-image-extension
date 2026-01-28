@@ -3,12 +3,9 @@ import {getImageSuffixFromContentType} from '../../util';
 import {Spinner} from '@chakra-ui/react';
 import {
     Image,
-    useDisclosure,
-    Text,
     Box,
 } from '@chakra-ui/react';
 import Log from '../../util/log';
-import Preview from '../preview';
 
 import 'viewerjs/dist/viewer.css';
 import Viewer from 'viewerjs';
@@ -27,9 +24,11 @@ export type ImageProps = {
     selected?: boolean;
     onImageLoad: (image: ImageType) => void;
     onSelectionChange: (url: string) => void;
+    onPreview?: (index: number) => void;
+    index?: number;
 } & ImageType;
 
-export function ImageWrapper({url, selected, onImageLoad, onSelectionChange}: ImageProps) {
+export function ImageWrapper({url, selected, onImageLoad, onSelectionChange, onPreview, index}: ImageProps) {
     const [width, setWidth] = useState<number>(0);
     const [height, setHeight] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
@@ -80,25 +79,27 @@ export function ImageWrapper({url, selected, onImageLoad, onSelectionChange}: Im
         onSelectionChange(url);
     }
 
-    const {isOpen, onOpen, onClose} = useDisclosure();
     function preview(e) {
         e.stopPropagation();
-        // onOpen();
-
-        if (imageViewerRef.current === null) {
-            imageViewerRef.current = new Viewer(imageRef.current, {});
+        // 使用新的预览方式
+        if (onPreview && typeof index === 'number') {
+            onPreview(index);
+        } else {
+            // 回退到旧的 viewerjs 方式
+            if (imageViewerRef.current === null) {
+                imageViewerRef.current = new Viewer(imageRef.current, {});
+            }
+            imageViewerRef.current.show();
         }
-        imageViewerRef.current.show();
     }
 
     return (
         <li className={`image-wrapper ${selected ? 'selected' : ''}`} onClick={onClick}>
-            <>
-                {width ? <Box className="image-size"
-                               onClick={preview}
-                >{width}×{height}</Box> : null}
-                <Preview isOpen={isOpen} url={url} width={width} height={height} onClose={onClose}/>
-            </>
+            {width ? (
+                <Box className="image-size"
+                     onClick={preview}
+                >{width}×{height}</Box>
+            ) : null}
             <Image ref={imageRef} alt=""
                    className="image"
                    src={url}
